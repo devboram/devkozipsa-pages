@@ -2,44 +2,50 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KOZIPSA Apple Login Redirect</title>
+    <title>KOZIPSA Apple Login</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f4; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 2s linear infinite; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f4; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .message { margin-left: 15px; color: #333; }
+        .message { margin-top: 20px; font-size: 16px; color: #333; text-align: center; line-height: 1.5; }
     </style>
 </head>
 <body>
-    <div class="loader"></div>
-    <div class="message">로그인 정보를 확인 중입니다. 잠시만 기다려주세요...</div>
+
+    <div class="loader" id="loader"></div>
+    <div class="message" id="status-message">인증 정보를 확인했습니다.<br>잠시 후 앱으로 돌아갑니다.</div>
 
     <script>
         window.onload = function() {
-            // 1. URL에서 쿼리 파라미터 추출
             const urlParams = new URLSearchParams(window.location.search);
             const idToken = urlParams.get('id_token');
             const code = urlParams.get('code');
             const state = urlParams.get('state');
 
-             2. 데이터가 있는지 확인
+            const messageElement = document.getElementById('status-message');
+            const loaderElement = document.getElementById('loader');
+
             if (idToken) {
-                // 3. 안드로이드 앱으로 데이터 전달 (Deep Link)
-                // ViewModel과 AndroidManifest에 설정한 scheme 및 host와 일치해야 함
                 const scheme = "kozipsa-auth";
                 const host = "apple-callback";
                 const deepLink = `${scheme}://${host}?id_token=${idToken}&code=${code}&state=${state}`;
                 
-                // 앱으로 리다이렉트 실행
-                window.location.href = deepLink;
+                // 1. 1.5초 정도 대기 후 앱으로 리다이렉트 (사용자가 메시지를 읽을 시간 제공)
+                setTimeout(function() {
+                    window.location.href = deepLink;
+                    
+                    // 2. 리다이렉트 후 브라우저 상태 업데이트
+                    messageElement.innerHTML = "앱이 실행되지 않으면<br><b>[뒤로가기]</b>를 눌러주세요.";
+                    loaderElement.style.display = "none";
+                }, 3000); 
 
-                // 브라우저 탭을 닫기 위한 시도 (선택 사항)
+                // 3. 마지막으로 브라우저 창 닫기 시도 (일부 브라우저에서만 작동)
                 setTimeout(function() {
                     window.close();
-                }, 7000);
+                }, 5000); 
             } else {
-                document.querySelector('.message').innerText = "인증 정보를 찾을 수 없습니다. 다시 시도해 주세요.";
+                messageElement.innerText = "인증 정보를 찾을 수 없습니다. 다시 시도해 주세요.";
+                loaderElement.style.display = "none";
             }
         };
     </script>
