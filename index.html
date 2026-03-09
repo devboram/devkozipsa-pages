@@ -2,18 +2,61 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KOZIPSA Apple Login</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f4; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .message { margin-top: 20px; font-size: 16px; color: #333; text-align: center; line-height: 1.5; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            background-color: #ffffff; 
+        }
+        
+        /* 로딩 애니메이션 크기 키움 */
+        .loader { 
+            border: 6px solid #f3f3f3; 
+            border-top: 6px solid #3498db; 
+            border-radius: 50%; 
+            width: 60px; 
+            height: 60px; 
+            animation: spin 1s linear infinite; 
+            margin-bottom: 30px;
+        }
+
+        /* 폰트 크기 및 스타일 수정 */
+        .message { 
+            font-size: 24px;  /* 폰트 크기 대폭 확대 */
+            font-weight: bold; /* 굵게 */
+            color: #222222; 
+            text-align: center; 
+            line-height: 1.6;
+            word-break: keep-all;
+            padding: 0 20px;
+        }
+
+        .sub-message {
+            font-size: 16px;
+            color: #888888;
+            margin-top: 15px;
+        }
+
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
     </style>
 </head>
 <body>
 
     <div class="loader" id="loader"></div>
-    <div class="message" id="status-message">인증 정보를 확인했습니다.<br>잠시 후 앱으로 돌아갑니다.</div>
+    <div class="message" id="status-message">
+        인증 정보를 확인 중입니다.<br>잠시만 기다려주세요.
+    </div>
+    <div class="sub-message" id="sub-message">곧 앱으로 돌아갑니다.</div>
 
     <script>
         window.onload = function() {
@@ -23,6 +66,7 @@
             const state = urlParams.get('state');
 
             const messageElement = document.getElementById('status-message');
+            const subElement = document.getElementById('sub-message');
             const loaderElement = document.getElementById('loader');
 
             if (idToken) {
@@ -30,21 +74,19 @@
                 const host = "apple-callback";
                 const deepLink = `${scheme}://${host}?id_token=${idToken}&code=${code}&state=${state}`;
                 
-                // 1. 1.5초 정도 대기 후 앱으로 리다이렉트 (사용자가 메시지를 읽을 시간 제공)
+                // 1.5초 후 딥링크 실행 (사용자가 메시지를 읽을 시간 제공)
                 setTimeout(function() {
                     window.location.href = deepLink;
                     
-                    // 2. 리다이렉트 후 브라우저 상태 업데이트
-                    messageElement.innerHTML = "앱이 실행되지 않으면<br><b>[뒤로가기]</b>를 눌러주세요.";
-                    loaderElement.style.display = "none";
+                    // 실행 후 안내 문구 변경
+                    messageElement.innerHTML = "앱으로 연결 중입니다.";
+                    subElement.innerHTML = "화면이 멈춰있다면 <b>[뒤로가기]</b>를 눌러주세요.";
+                    loaderElement.style.borderColor = "#2ecc71"; // 초록색으로 변경
                 }, 1500); 
 
-                // 3. 마지막으로 브라우저 창 닫기 시도 (일부 브라우저에서만 작동)
-                setTimeout(function() {
-                    window.close();
-                }, 5000); 
             } else {
-                messageElement.innerText = "인증 정보를 찾을 수 없습니다. 다시 시도해 주세요.";
+                messageElement.innerText = "인증 정보를 찾을 수 없습니다.";
+                subElement.innerText = "다시 시도해 주세요.";
                 loaderElement.style.display = "none";
             }
         };
