@@ -70,9 +70,10 @@
             const loaderElement = document.getElementById('loader');
 
             if (idToken) {
-                const scheme = "kozipsaapp://";
-                const host = "kozipsa/simple_login";
+                const scheme = "kozipsaapp";
+                const host = "kozipsa";
                 const deepLink = `${scheme}://${host}?id_token=${idToken}&code=${code}&state=${state}`;
+
                 
                 // 1.5초 후 딥링크 실행 (사용자가 메시지를 읽을 시간 제공)
                 setTimeout(function() {
