@@ -1,14 +1,40 @@
-  <!DOCTYPE html>
-  <html>
-  <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-      <style>
-          img { max-width: 100%; height: auto; }
-          body { margin: 0; padding: 0px; word-break: break-all; }
-      </style>
-  </head>
-  <body>
-      마케팅 정보 수신 동의
-  </body>
-  </html>
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="http://admin.kozipsa-dev.kocomlab.com/css/toast-ui.css" type="text/css" />
+<style>
+    img { max-width: 100%; height: auto; }
+    body { 
+        margin: 0; 
+        padding: 16px; 
+        word-break: break-all; 
+        visibility: hidden;
+    }
+</style>
+<script src="http://admin.kozipsa-dev.kocomlab.com/test.js"></script>
+</head>
+<body class="toastui-editor-contents"> 
+    마케팅 정보 수신 동의
+
+  <script>
+    (function() {
+    document.body.style.visibility = 'visible';
+
+    function callNative() {   
+        var isAndroid = /Android/i.test(navigator.userAgent);
+        var hasBridge = window.Native && typeof window.Native.onPageFinished === 'function';
+
+        if (hasBridge) {
+            window.Native.onPageFinished();
+        } else if (isAndroid) {
+            setTimeout(callNative, 100);
+        } else {
+            console.log("Non-Android device. Bridge ignored.");
+        }
+    }
+
+    callNative();
+})();
+  </script>
+</body>
+</html>
